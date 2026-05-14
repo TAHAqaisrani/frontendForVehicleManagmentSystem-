@@ -17,8 +17,11 @@ export default function Register() {
       login(res.data.user, res.data.token);
       navigate('/customer/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed');
+      console.error('Registration error details:', err.response?.data);
+      const msg = err.response?.data?.error || 'Registration failed. Check console for details.';
+      setError(msg);
     } finally { setLoading(false); }
+
   };
 
   return (

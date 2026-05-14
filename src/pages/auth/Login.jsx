@@ -24,17 +24,17 @@ export default function Login() {
     } finally { setLoading(false); }
   };
 
-  const demoLogin = async (email, password) => {
-    setForm({ email, password });
+  const demoLogin = async (role) => {
     setError(''); setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post('/auth/demo', { role });
       login(res.data.user, res.data.token);
       navigate(ROLE_REDIRECT[res.data.user.role] || '/');
     } catch (err) {
       setError(err.response?.data?.error || 'Demo Access Denied');
     } finally { setLoading(false); }
   };
+
 
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center p-6 relative overflow-hidden">
@@ -107,19 +107,20 @@ export default function Login() {
           <p className="text-[10px] font-black text-center text-muted uppercase tracking-[0.3em] mb-6">Simulator Environments</p>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'Admin', icon: '🛡', email: 'admin@vsc.com', pass: 'admin123' },
-              { label: 'Advisor', icon: '📋', email: 'advisor@vsc.com', pass: 'advisor123' },
-              { label: 'Technician', icon: '🔧', email: 'tech@vsc.com', pass: 'tech123' },
-              { label: 'Customer', icon: '👤', email: 'customer@vsc.com', pass: 'customer123' },
+              { label: 'Admin', icon: '🛡', role: 'admin' },
+              { label: 'Advisor', icon: '📋', role: 'advisor' },
+              { label: 'Technician', icon: '🔧', role: 'technician' },
+              { label: 'Customer', icon: '👤', role: 'customer' },
             ].map(d => (
               <button 
                 key={d.label}
-                onClick={() => demoLogin(d.email, d.pass)}
+                onClick={() => demoLogin(d.role)}
                 className="h-12 bg-white/5 border border-white/5 rounded-xl text-[11px] font-black text-white hover:bg-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2 uppercase tracking-wider"
               >
                 <span>{d.icon}</span> {d.label}
               </button>
             ))}
+
           </div>
         </div>
       </div>
