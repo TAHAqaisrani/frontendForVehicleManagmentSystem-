@@ -3,7 +3,7 @@ import axios from 'axios';
 const isProd = import.meta.env.PROD;
 const api = axios.create({ 
   baseURL: isProd 
-    ? 'https://backendforvehicle-managment-system.onrender.com/api' 
+    ? 'https://backendforvehicle-managment-system-1.onrender.com/api' 
     : '/api' 
 });
 
