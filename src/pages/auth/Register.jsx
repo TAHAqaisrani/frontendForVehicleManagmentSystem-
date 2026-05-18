@@ -59,9 +59,41 @@ export default function Register() {
               {loading ? 'Creating…' : 'Create Account'}
             </button>
           </form>
-          <p style={{ marginTop: '16px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--muted)' }}>
-            Already have an account? <Link to="/login" style={{ color: 'var(--primary)' }}>Sign in</Link>
-          </p>
+        <p
+  style={{
+    marginTop: '20px',
+    textAlign: 'center',
+    fontSize: '0.95rem',
+    color: 'var(--muted)',
+    background: 'rgba(255,255,255,0.03)',
+    padding: '12px 16px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.08)',
+    backdropFilter: 'blur(6px)',
+  }}
+>
+  Already have an account?{' '}
+  <Link
+    to="/login"
+    style={{
+      color: 'var(--primary)',
+      fontWeight: '600',
+      textDecoration: 'none',
+      marginLeft: '4px',
+      transition: 'all 0.3s ease',
+    }}
+    onMouseOver={(e) => {
+      e.target.style.opacity = '0.8';
+      e.target.style.textDecoration = 'underline';
+    }}
+    onMouseOut={(e) => {
+      e.target.style.opacity = '1';
+      e.target.style.textDecoration = 'none';
+    }}
+  >
+    Sign In →
+  </Link>
+</p>
         </div>
       </div>
     </div>
