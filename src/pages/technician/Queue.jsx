@@ -8,9 +8,9 @@ import Loader from '../../components/Loader.jsx';
 
 export default function TechnicianQueue() {
   const { user } = useAuth();
-  const [jobs, setJobs]     = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all'); // State for the dropdown filter
 
   useEffect(() => {
     api.get(`/job-cards/technician/${user.id}`)
@@ -18,10 +18,14 @@ export default function TechnicianQueue() {
       .finally(() => setLoading(false));
   }, [user.id]);
 
-  const priorityOrder = ['in_service','waiting_for_parts','booked','inspected','ready_for_pickup'];
-  const sorted = [...jobs].sort((a, b) => priorityOrder.indexOf(a.repair_status) - priorityOrder.indexOf(b.repair_status));
+  const priorityOrder = ['in_service', 'waiting_for_parts', 'booked', 'inspected', 'ready_for_pickup', 'returned_to_customer'];
+  
+  // Filter jobs based on selected dropdown value
+  const filteredJobs = filterStatus === 'all' 
+    ? jobs 
+    : jobs.filter(j => j.repair_status === filterStatus);
 
-  const filteredSorted = sorted.filter(j => filter === 'all' || j.repair_status === filter);
+  const sorted = [...filteredJobs].sort((a, b) => priorityOrder.indexOf(a.repair_status) - priorityOrder.indexOf(b.repair_status));
 
   return (
     <>
@@ -29,48 +33,47 @@ export default function TechnicianQueue() {
       <div className="page">
         <div className="page-header">
           <h1 className="page-title">My Work Queue</h1>
-          <span style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{jobs.length} active job{jobs.length !== 1 ? 's' : ''}</span>
+          <span style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{filteredJobs.length} active job{filteredJobs.length !== 1 ? 's' : ''}</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-          <div style={{ flex: 1 }}>
-            <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
-              {['in_service','waiting_for_parts','inspected','booked','ready_for_pickup'].map(s => (
-                <div key={s} className="stat-card">
-                  <div className="stat-label" style={{ textTransform: 'capitalize' }}>{s.replace(/_/g,' ')}</div>
-                  <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>
-                    {jobs.filter(j => j.repair_status === s).length}
-                  </div>
-                </div>
-              ))}
+        <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
+          {['in_service', 'waiting_for_parts', 'inspected', 'booked', 'ready_for_pickup'].map(s => (
+            <div key={s} className="stat-card">
+              <div className="stat-label" style={{ textTransform: 'capitalize' }}>{s.replace(/_/g, ' ')}</div>
+              <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>
+                {jobs.filter(j => j.repair_status === s).length}
+              </div>
             </div>
-          </div>
-
-          <div style={{ minWidth: 220 }}>
-            <label htmlFor="status-filter" style={{ display: 'block', color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '6px' }}>Filter jobs</label>
-            <select
-              id="status-filter"
-              value={filter}
-              onChange={e => setFilter(e.target.value)}
-              style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', background: 'var(--panel)', color: 'var(--text)' }}
-            >
-              <option value="all">All statuses</option>
-              <option value="booked">Booked</option>
-              <option value="inspected">Inspected</option>
-              <option value="ready_for_pickup">Ready for pickup</option>
-            </select>
-          </div>
+          ))}
         </div>
 
-        {loading ? <Loader /> : filteredSorted.length === 0 ? (
+        {/* Status Filter Dropdown */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+          <select 
+            className="form-select" 
+            style={{ width: '200px', cursor: 'pointer' }}
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Statuses</option>
+            <option value="booked">Booked</option>
+            <option value="inspected">Inspected</option>
+            <option value="in_service">In Service</option>
+            <option value="waiting_for_parts">Waiting For Parts</option>
+            <option value="ready_for_pickup">Ready For Pickup</option>
+            <option value="returned_to_customer">Returned to Customer</option>
+          </select>
+        </div>
+
+        {loading ? <Loader /> : sorted.length === 0 ? (
           <div className="card empty-state">
             <div className="empty-icon">🔧</div>
-            <div className="empty-title">No jobs assigned</div>
-            <div className="empty-desc">You have no active work orders</div>
+            <div className="empty-title">No jobs found</div>
+            <div className="empty-desc">No active work orders for the selected status.</div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {filteredSorted.map(j => (
+            {sorted.map(j => (
               <div key={j.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
