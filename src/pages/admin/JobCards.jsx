@@ -76,7 +76,10 @@ export default function AdminJobCards() {
                       {j.actual_cost > 0 ? `$${parseFloat(j.actual_cost).toFixed(2)}` : '—'}
                     </td>
                     <td style={{ display: 'flex', gap: '6px' }}>
-                    
+                      <Link to={`/customer/invoice/${j.id}`} className="btn btn-outline btn-sm">🧾</Link>
+                      {!j.is_approved && (
+                        <button className="btn btn-primary btn-sm" onClick={() => approveJobCard(j.id)}>Approve</button>
+                      )}
                       {j.is_approved && (
                         <span style={{ fontSize: '0.8rem', color: 'var(--success)', alignSelf: 'center', fontWeight: 600 }}>Approved</span>
                       )}
